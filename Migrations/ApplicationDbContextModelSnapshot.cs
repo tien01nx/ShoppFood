@@ -35,9 +35,10 @@ namespace ShoppFood.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
@@ -45,6 +46,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -69,9 +71,10 @@ namespace ShoppFood.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -80,6 +83,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -99,9 +103,10 @@ namespace ShoppFood.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("OrderDate")
@@ -120,6 +125,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -147,9 +153,10 @@ namespace ShoppFood.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OrderId")
@@ -162,6 +169,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -188,9 +196,10 @@ namespace ShoppFood.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -211,6 +220,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -234,9 +244,10 @@ namespace ShoppFood.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
@@ -247,6 +258,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -271,9 +283,10 @@ namespace ShoppFood.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -292,6 +305,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -321,17 +335,14 @@ namespace ShoppFood.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BankAccount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FullName")
@@ -359,6 +370,7 @@ namespace ShoppFood.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -378,7 +390,7 @@ namespace ShoppFood.Migrations
             modelBuilder.Entity("ShoppFood.Models.Bank", b =>
                 {
                     b.HasOne("ShoppFood.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Banks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -460,6 +472,11 @@ namespace ShoppFood.Migrations
             modelBuilder.Entity("ShoppFood.Models.Product", b =>
                 {
                     b.Navigation("ProductImages");
+                });
+
+            modelBuilder.Entity("ShoppFood.Models.User", b =>
+                {
+                    b.Navigation("Banks");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,107 +6,88 @@ using ShoppFood.Models;
 
 namespace ShoppFood.Areas.Admin.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController<User>
     {
-
         private readonly IUnitOfWork _unitOfWork;
 
-        public UserController(IUnitOfWork unitOfWork)
+        public UserController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public ActionResult Index()
-        {
-
-            var users = _unitOfWork.User.GetAll().ToList();
-
-            return Json(users);
-        }
-
         [HttpPost]
-        public IActionResult Create([FromBody] User user)
+        public IActionResult Upsert([FromBody] User user)
         {
             try
             {
                 bool exists = _unitOfWork.User.ExistsBy(c => c.UserName.Equals(user.UserName));
+                
                 if (exists)
                 {
                     return BadRequest(new
                     {
-                        message = "Tên  Usernam đã tồn tại"
+                        message = "Tên Username đã tồn tại. Vui lòng chọn tên đăng nhập khác."
+                    });
+                }
+
+              
+                if (user.Id == 0)
+                {
+                    _unitOfWork.User.Add(user);
+                    _unitOfWork.Save();
+                    return Ok(new
+                    {
+                        message = "Thêm người dùng thành công.",
+                        user = user
                     });
                 }
                 else
                 {
-                    user.onCreate();
-                    user.CreateBy = user.UserName;
-                     // sau sua thanh bang thiet bi dang dang nhap
-                    user.UpdateBy = user.UserName;
-                    _unitOfWork.User.Add(user);
+                    user.UpdateDate = DateTime.Now;
+                    _unitOfWork.User.Update(user);
                     _unitOfWork.Save();
+                    return Ok(new
+                    {
+                        message = "Cập nhật người dùng thành công.",
+                        user = user
+                    });
                 }
-
-
-                return Ok(user);
             }
             catch
             {
-                return BadRequest();
+                return BadRequest(new
+                {
+                    message = "Đã xảy ra lỗi. Vui lòng thử lại sau."
+                });
             }
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
             var user = _unitOfWork.User.Get(u => u.Id == id);
-            if(user!= null)
+            if (user != null)
             {
                 return Ok(user);
             }
-          
-           return BadRequest("Username không tồn tại");
-           
+
+            return BadRequest("Username không tồn tại");
         }
 
-
-        [HttpPost]
-        public IActionResult Edit([FromBody] User user)
-        {
-
-
-            if (ModelState.IsValid)
-            {
-                // thêm dữ liệu vào database``
-                user.onUpdate();
-
-                // sau sửa thành người dùng đang nhăp nhập
-                user.UpdateBy = user.UserName;
-                _unitOfWork.User.Update(user);
-
-                // lưu dữ liệu khi thêm
-                _unitOfWork.Save();
-                //TempData["success"] = "Category update successfully";
-                return Ok(user);
-            }
-
-            // return View();
-            // Nếu dữ liệu không hợp lệ, quay lại modal chỉnh sửa
-            return BadRequest();
-        }
 
         [HttpDelete]
-        public IActionResult Delete(int ? id)
+        public IActionResult Delete(int? id)
         {
-            var user = _unitOfWork.User.Get(u=>u.Id==id);
-            if (user!= null)
+            var user = _unitOfWork.User.Get(u => u.Id == id);
+            if (user != null)
             {
                 _unitOfWork.User.Remove(user);
                 _unitOfWork.Save();
                 return Ok("Xóa thành công");
             }
 
-           
+
             return BadRequest("Xóa không hợp lệ");
         }
 
@@ -124,7 +105,7 @@ namespace ShoppFood.Areas.Admin.Controllers
                 .RuleFor(u => u.PhoneNumber, f => f.Phone.PhoneNumber())
                 .RuleFor(u => u.Address, f => f.Address.FullAddress())
                 .RuleFor(u => u.ApartmentNumber, f => f.Address.SecondaryAddress())
-                .RuleFor(u => u.BankAccount, f => f.Finance.Account())
+                // .RuleFor(u => u.BankAccount, f => f.Finance.Account())
                 .RuleFor(u => u.Status, f => f.Random.Number(0, 1))
                 .RuleFor(u => u.RestaurantId, f => f.Random.Number(5, 29))
                 .RuleFor(u => u.Role, f => "User"); // Ví dụ, bạn có thể đặt vai trò mặc định ở đây
@@ -136,6 +117,7 @@ namespace ShoppFood.Areas.Admin.Controllers
             {
                 _unitOfWork.User.Add(user);
             }
+
             _unitOfWork.Save();
 
             return Json("Tạo thành công");
@@ -148,7 +130,8 @@ namespace ShoppFood.Areas.Admin.Controllers
                 .RuleFor(r => r.PhoneNumber, f => f.Phone.PhoneNumber())
                 .RuleFor(r => r.Description, f => f.Lorem.Paragraph())
                 .RuleFor(r => r.OpenTime, f => f.Date.Soon())
-                .RuleFor(r => r.CloseTime, f => f.Date.Soon(1, DateTime.Now.AddHours(1))); // CloseTime sau một giờ kể từ OpenTime
+                .RuleFor(r => r.CloseTime,
+                    f => f.Date.Soon(1, DateTime.Now.AddHours(1))); // CloseTime sau một giờ kể từ OpenTime
 
             var restaurants = faker.Generate(count);
 
@@ -161,6 +144,5 @@ namespace ShoppFood.Areas.Admin.Controllers
 
             return Json("Tạo thành công");
         }
-
     }
 }

@@ -17,9 +17,6 @@ namespace ShoppFood.Models
         public DateTime OpenTime { get; set; }
 
         public DateTime CloseTime { get; set; }
-
-     
-
-
+        
     }
 }

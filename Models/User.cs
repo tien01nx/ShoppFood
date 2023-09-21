@@ -9,8 +9,7 @@ namespace ShoppFood.Models
 {
     public class User : BaseModel
     {
- 
-        public int Id { get; set; }  
+        public int Id { get; set; }
 
         public string UserName { get; set; }
 
@@ -25,7 +24,7 @@ namespace ShoppFood.Models
 
         public string Avatar { get; set; }
 
-        
+
         public string? State { get; set; }
 
 
@@ -36,25 +35,18 @@ namespace ShoppFood.Models
 
         public string? ApartmentNumber { get; set; }
 
-        public string BankAccount { get; set; }
+        [ValidateNever]
+        public List<Bank> Banks { get; set; }
 
 
         public int Status { get; set; }
 
         [NotMapped] public string? Role { get; set; }
 
-
-
         public int RestaurantId { get; set; }
+
         [ForeignKey("RestaurantId")]
         [ValidateNever]
         public Restaurant Restaurant { get; set; }
-
-
-
-
-
-
-
     }
 }

@@ -4,54 +4,40 @@ using ShoppFood.Models;
 
 namespace ShoppFood.Areas.Admin.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : BaseController<Category>
     {
-
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWord)
+
+        public CategoryController(IUnitOfWork unitOfWord) : base(unitOfWord)
         {
             _unitOfWork = unitOfWord;
         }
-        public IActionResult Index()
-        {
 
 
-            return View();
-        }
-
-
-        public IActionResult GetAllCategory()
-        {
-            var category = _unitOfWork.Category.GetAll();
-
-            return Json(category);
-        }
-
+   
 
         [HttpPost]
-        public IActionResult Create([FromBody] Category category)
+        public IActionResult Upsert([FromBody] Category category)
         {
             try
             {
-                bool exists = _unitOfWork.Category.ExistsBy(u =>u.Name.Equals(category.Name));
+                bool exists = _unitOfWork.Category.ExistsBy(u => u.Name.Equals(category.Name));
                 if (exists)
                 {
-                    return BadRequest(new
+
+                    category.UpdateDate = DateTime.Now;
+                    _unitOfWork.Category.Update(category);
+                    return Ok(new
                     {
-                        message = "Tên  danh mục đã tồn tại"
+                        message = "Cập nhật thành công"
                     });
                 }
-                else
-                {
-                    category.onCreate();
-                    category.CreateBy = "hehe";
-                    // sau sua thanh bang thiet bi dang dang nhap
-                    category.UpdateBy = "hehe";
+                else  if(category.Id==0)
                     _unitOfWork.Category.Add(category);
-                    _unitOfWork.Save();
-                }
 
-
+                
+                _unitOfWork.Save();
+                
                 return Ok(category);
             }
             catch
@@ -70,38 +56,9 @@ namespace ShoppFood.Areas.Admin.Controllers
             }
 
             return BadRequest("Category không tồn tại");
-
         }
 
-
-        [HttpPost]
-        public IActionResult Edit([FromBody] Category category)
-        {
-
-            if (ModelState.IsValid)
-            {
-                var obj = _unitOfWork.Category.Get(u => u.Id == category.Id);
-                if (obj != null)
-                {
-
-                    category.onUpdate();
-
-                    // sau sửa thành người dùng đang nhăp nhập
-                    category.UpdateBy = "hehe";
-                    _unitOfWork.Category.Update(category);
-
-
-                    _unitOfWork.Save();
-
-                    return Ok(category);
-                }
-
-               
-            }
-
-            return BadRequest();
-        }
-
+        
 
         [HttpDelete]
         public IActionResult Delete(int id)
@@ -115,8 +72,6 @@ namespace ShoppFood.Areas.Admin.Controllers
             }
 
             return BadRequest("Category không tồn tại");
-
         }
-
     }
 }
